@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 )
 
-func whenHandlerIsCalled(request *http.Request, options ...validation.Option) (*httptest.ResponseRecorder, *http.Request) {
+func whenWrappedHandlerIsCalled(request *http.Request, options ...validation.Option) (*httptest.ResponseRecorder, *http.Request) {
 	var nextHandlerRequest *http.Request
 	responseRecorder := httptest.NewRecorder()
 	validationWrapper := validation.NewWrapper(options...)

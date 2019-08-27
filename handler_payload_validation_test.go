@@ -23,7 +23,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 		request := requestBuilder.
 			WithBody(strings.NewReader(defaultPayload)).
 			Build()
-		_, nextHandlerRequest := whenHandlerIsCalled(
+		_, nextHandlerRequest := whenWrappedHandlerIsCalled(
 			request,
 			validation.RequestValidation(validation.Payload(&TestPayload{})),
 		)
@@ -35,7 +35,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 
 	t.Run("it should add body payload into request context", func(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader(defaultPayload)).Build()
-		_, nextHandlerRequest := whenHandlerIsCalled(
+		_, nextHandlerRequest := whenWrappedHandlerIsCalled(
 			request,
 			validation.RequestValidation(validation.Payload(&TestPayload{})),
 		)
@@ -47,7 +47,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 
 	t.Run("it should not keep body payload on request, when PreservePayload option is false", func(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader(defaultPayload)).Build()
-		_, nextHandlerRequest := whenHandlerIsCalled(
+		_, nextHandlerRequest := whenWrappedHandlerIsCalled(
 			request,
 			validation.RequestValidation(validation.Payload(&TestPayload{})),
 			validation.PreservePayload(false),
@@ -60,7 +60,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 
 	t.Run("it should not read the body from request, if request payload validation is not configured", func(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader(defaultPayload)).Build()
-		_, nextHandlerRequest := whenHandlerIsCalled(
+		_, nextHandlerRequest := whenWrappedHandlerIsCalled(
 			request,
 			validation.PreservePayload(false),
 		)
@@ -75,7 +75,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 
 	t.Run("it should return a 400 response, if payload validation fails", func(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader("{}")).Build()
-		responseRecorder, _ := whenHandlerIsCalled(
+		responseRecorder, _ := whenWrappedHandlerIsCalled(
 			request,
 			validation.RequestValidation(validation.Payload(&TestPayload{})),
 		)
