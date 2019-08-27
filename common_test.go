@@ -7,13 +7,13 @@ import (
 )
 
 func whenWrappedHandlerIsCalled(request *http.Request, options ...validation.Option) (*httptest.ResponseRecorder, *http.Request) {
-	var nextHandlerRequest *http.Request
+	var wrappedHandlerRequest *http.Request
 	responseRecorder := httptest.NewRecorder()
 	validationWrapper := validation.NewWrapper(options...)
 	handler := func(w http.ResponseWriter, r *http.Request) {
-		nextHandlerRequest = r
+		wrappedHandlerRequest = r
 		w.WriteHeader(200)
 	}
 	validationWrapper(http.HandlerFunc(handler)).ServeHTTP(responseRecorder, request)
-	return responseRecorder, nextHandlerRequest
+	return responseRecorder, wrappedHandlerRequest
 }

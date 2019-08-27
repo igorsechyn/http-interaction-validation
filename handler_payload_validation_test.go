@@ -23,52 +23,52 @@ func TestHandler_PayloadValidation(t *testing.T) {
 		request := requestBuilder.
 			WithBody(strings.NewReader(defaultPayload)).
 			Build()
-		_, nextHandlerRequest := whenWrappedHandlerIsCalled(
+		_, wrappedHandlerRequest := whenWrappedHandlerIsCalled(
 			request,
 			validation.RequestValidation(validation.Payload(&TestPayload{})),
 		)
 
-		body, err := ioutil.ReadAll(nextHandlerRequest.Body)
+		body, err := ioutil.ReadAll(wrappedHandlerRequest.Body)
 		assert.NoError(t, err)
 		assert.Equal(t, defaultPayload, string(body), "request should preserve body reader")
 	})
 
 	t.Run("it should add body payload into request context", func(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader(defaultPayload)).Build()
-		_, nextHandlerRequest := whenWrappedHandlerIsCalled(
+		_, wrappedHandlerRequest := whenWrappedHandlerIsCalled(
 			request,
 			validation.RequestValidation(validation.Payload(&TestPayload{})),
 		)
 
-		bytes, ok := validation.PayloadFromContext(nextHandlerRequest.Context())
+		bytes, ok := validation.PayloadFromContext(wrappedHandlerRequest.Context())
 		assert.True(t, ok)
 		assert.Equal(t, defaultPayload, string(bytes))
 	})
 
 	t.Run("it should not keep body payload on request, when PreservePayload option is false", func(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader(defaultPayload)).Build()
-		_, nextHandlerRequest := whenWrappedHandlerIsCalled(
+		_, wrappedHandlerRequest := whenWrappedHandlerIsCalled(
 			request,
 			validation.RequestValidation(validation.Payload(&TestPayload{})),
 			validation.PreservePayload(false),
 		)
 
-		body, err := ioutil.ReadAll(nextHandlerRequest.Body)
+		body, err := ioutil.ReadAll(wrappedHandlerRequest.Body)
 		assert.NoError(t, err)
 		assert.Equal(t, 0, len(body), "request payload should be empty")
 	})
 
 	t.Run("it should not read the body from request, if request payload validation is not configured", func(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader(defaultPayload)).Build()
-		_, nextHandlerRequest := whenWrappedHandlerIsCalled(
+		_, wrappedHandlerRequest := whenWrappedHandlerIsCalled(
 			request,
 			validation.PreservePayload(false),
 		)
 
-		bytesFromContext, ok := validation.PayloadFromContext(nextHandlerRequest.Context())
+		bytesFromContext, ok := validation.PayloadFromContext(wrappedHandlerRequest.Context())
 		assert.True(t, ok)
 		assert.Nil(t, bytesFromContext, "body value in context should be nil")
-		body, err := ioutil.ReadAll(nextHandlerRequest.Body)
+		body, err := ioutil.ReadAll(wrappedHandlerRequest.Body)
 		assert.NoError(t, err)
 		assert.Greater(t, len(body), 0, "request payload should not be empty")
 	})
