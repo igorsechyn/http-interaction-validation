@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/alecthomas/jsonschema v0.0.0-20190626084004-00dfc6288dec
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/stretchr/testify v1.4.0
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190809123943-df4f5c81cb3b // indirect
