@@ -2,6 +2,7 @@ package validation
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -20,15 +21,42 @@ type ValidationHandler struct {
 	bodyValidator *bodyValidator
 }
 
+type ValidationResponse struct {
+	Code   string   `json:"code"`
+	Errors []string `json:"errors"`
+}
+
 func (handler *ValidationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	result := handler.bodyValidator.validate(r)
+	result := handler.validateRequest(r)
 	if !result.isValid {
 		w.WriteHeader(400)
+		writeErrorResponse(w, result)
 		return
 	}
 
 	ctx := context.WithValue(r.Context(), payloadKey, result.validatedValue)
 	handler.next.ServeHTTP(w, r.WithContext(ctx))
+}
+
+func (handler *ValidationHandler) validateRequest(r *http.Request) bodyValidationResult {
+	if !handler.config.requestValidationConfig.enabled {
+		return bodyValidationResult{
+			validatedValue: nil,
+			isValid:        true,
+			outcome:        outcome{},
+		}
+	}
+	return handler.bodyValidator.validate(r)
+}
+
+func writeErrorResponse(w http.ResponseWriter, validationResult bodyValidationResult) {
+	response := ValidationResponse{
+		Code:   "body.validation.failure",
+		Errors: validationResult.outcome.errors,
+	}
+
+	bytes, _ := json.Marshal(response)
+	w.Write(bytes)
 }
 
 func NewWrapper(options ...Option) func(handler http.Handler) http.Handler {

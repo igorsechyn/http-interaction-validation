@@ -16,6 +16,10 @@ func copyRequestPayload(request *http.Request) ([]byte, error) {
 }
 
 func readPayload(request *http.Request, preserveBodyOnRequest bool) ([]byte, error) {
+	if request.Body == nil {
+		return nil, nil
+	}
+
 	if preserveBodyOnRequest {
 		return copyRequestPayload(request)
 	}
