@@ -9,7 +9,7 @@
 
 ## Development dependencies
 
-- go 1.11 or higher
+- go 1.12 or higher
 
 ## Setting up a development machine
 
