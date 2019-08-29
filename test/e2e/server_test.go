@@ -11,7 +11,10 @@ func startServer(handler http.Handler) *http.Server {
 	r.Method("POST", "/", handler)
 	server := &http.Server{Addr: ":8080", Handler: r}
 	go func() {
-		server.ListenAndServe()
+		err := server.ListenAndServe()
+		if err != nil {
+			panic(err)
+		}
 	}()
 	return server
 }

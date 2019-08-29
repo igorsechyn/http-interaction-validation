@@ -5,6 +5,7 @@ import (
 	"context"
 	validation "http-interaction-validation"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"testing"
@@ -19,14 +20,20 @@ type E2eTestPayload struct {
 func TestMain(m *testing.M) {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		bytes, _ := ioutil.ReadAll(r.Body)
-		w.Write(bytes)
+		_, err := w.Write(bytes)
+		if err != nil {
+			log.Printf("Write failed: %v", err)
+		}
 	}
 	wrapper := validation.NewWrapper(
 		validation.RequestValidation(validation.Payload(&E2eTestPayload{})),
 	)
 	server := startServer(wrapper(http.HandlerFunc(handler)))
 	os.Exit(m.Run())
-	server.Shutdown(context.Background())
+	err := server.Shutdown(context.Background())
+	if err != nil {
+		log.Printf("Shutting down the server failed: %v", err)
+	}
 }
 func TestValidation_Ok(t *testing.T) {
 	payload := []byte(`{"name":"me"}`)

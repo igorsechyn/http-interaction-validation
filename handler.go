@@ -3,6 +3,7 @@ package validation
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -56,7 +57,10 @@ func writeErrorResponse(w http.ResponseWriter, validationResult bodyValidationRe
 	}
 
 	bytes, _ := json.Marshal(response)
-	w.Write(bytes)
+	_, err := w.Write(bytes)
+	if err != nil {
+		log.Printf("Write failed: %v", err)
+	}
 }
 
 func NewWrapper(options ...Option) func(handler http.Handler) http.Handler {
