@@ -1,6 +1,14 @@
 # http-interaction-validation
 > Provides a wrapper around standard http handler to perform validation
 
+## Motivation
+
+There are a number of libraries that can be used for request validation, like https://github.com/thedevsaddam/govalidator and https://github.com/go-playground/validator. Both of these packages use a custom set of validation rules, either defined in a map separately from the struct describing the payload or in the field tags.
+
+This library uses https://github.com/alecthomas/jsonschema package, which allows the user to define the validation rules as field tags in json schema format. The json schema can then be used to validate request payload, path parameters and headers. 
+
+Another benefit of having a json schema describing requests and responses is the ability to autogenerate open api specification, similar to what https://github.com/go-chi/docgen is doing.
+
 ## Requirements
 - go 1.12 or higher
 
