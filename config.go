@@ -6,18 +6,20 @@ type config struct {
 }
 
 type requestValidationConfig struct {
-	payloadValue interface{}
-	bodyRequired bool
-	enabled      bool
+	payloadValue         interface{}
+	bodyRequired         bool
+	enabled              bool
+	additionalProperties bool
 }
 
 func getConfig(options ...Option) *config {
 	handlerConfig := &config{
 		preservePayload: true,
 		requestValidationConfig: &requestValidationConfig{
-			payloadValue: nil,
-			bodyRequired: true,
-			enabled:      true,
+			payloadValue:         nil,
+			bodyRequired:         true,
+			enabled:              true,
+			additionalProperties: true,
 		},
 	}
 
@@ -50,6 +52,12 @@ func BodyRequired(value bool) RequestValidationConfigOption {
 	}
 }
 
+func AdditionalProperties(value bool) RequestValidationConfigOption {
+	return func(config *requestValidationConfig) {
+		config.additionalProperties = value
+	}
+}
+
 func Enabled(value bool) RequestValidationConfigOption {
 	return func(config *requestValidationConfig) {
 		config.enabled = value
@@ -58,9 +66,10 @@ func Enabled(value bool) RequestValidationConfigOption {
 
 func RequestValidation(options ...RequestValidationConfigOption) Option {
 	requestValidationConfig := &requestValidationConfig{
-		payloadValue: nil,
-		bodyRequired: true,
-		enabled:      true,
+		payloadValue:         nil,
+		bodyRequired:         true,
+		enabled:              true,
+		additionalProperties: true,
 	}
 
 	for _, option := range options {

@@ -45,11 +45,11 @@ func TestValidation_Ok(t *testing.T) {
 }
 
 func TestValidation_NotOk(t *testing.T) {
-	payload := []byte(`{"wrong":"format"}`)
+	payload := []byte(`{"name":2}`)
 	response, err := http.Post("http://localhost:8080/", "application/json", bytes.NewBuffer(payload))
 
 	assert.NoError(t, err)
 	assert.Equal(t, 400, response.StatusCode)
 	responseBody, _ := ioutil.ReadAll(response.Body)
-	assert.Equal(t, `{"code":"body.validation.failure","errors":["(root): name is required","(root): Additional property wrong is not allowed"]}`, string(responseBody))
+	assert.Equal(t, `{"code":"body.validation.failure","errors":["name: Invalid type. Expected: string, given: integer"]}`, string(responseBody))
 }

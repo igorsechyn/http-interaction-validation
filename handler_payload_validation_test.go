@@ -124,6 +124,33 @@ func TestHandler_PayloadValidation(t *testing.T) {
 				expectedStatusCode: 200,
 				expectedResponse:   "",
 			},
+			{
+				description:        "body with additional properties, when addiitonal properties is not set",
+				options:            []validation.Option{validation.RequestValidation(validation.Payload(&TestPayload{}))},
+				payload:            strings.NewReader(`{"name":"value","additional":"property"}`),
+				expectedStatusCode: 200,
+				expectedResponse:   "",
+			},
+			{
+				description: "body with additional properties, when addiitonal properties is set to true",
+				options: []validation.Option{validation.RequestValidation(
+					validation.Payload(&TestPayload{}),
+					validation.AdditionalProperties(true),
+				)},
+				payload:            strings.NewReader(`{"name":"value","additional":"property"}`),
+				expectedStatusCode: 200,
+				expectedResponse:   "",
+			},
+			{
+				description: "body with additional properties, when addiitonal properties set to false",
+				options: []validation.Option{validation.RequestValidation(
+					validation.Payload(&TestPayload{}),
+					validation.AdditionalProperties(false),
+				)},
+				payload:            strings.NewReader(`{"name":"value","additional":"property"}`),
+				expectedStatusCode: 400,
+				expectedResponse:   `{"code":"body.validation.failure","errors":["(root): Additional property additional is not allowed"]}`,
+			},
 		}
 
 		for _, testCase := range testCases {

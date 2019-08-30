@@ -62,6 +62,8 @@ withValidation := validation.NewWrapper(
 
 * `validation.BodyRequired(value bool)`: defines whether the body is required or not. Default is true and the validation will return an error response, if the body is missing
 
+* `validation.AdditionalProperties(value bool)`: defines whether additionalProperties are allowed or not. Default is true
+
 * `validation.Enabled(value bool)`: defines whether validation should be performed or skipped. Default is true, but can be used for example to skip validation in production environment
 
 #### Error handling

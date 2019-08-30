@@ -60,7 +60,10 @@ func (validator *bodyValidator) validateNilBody() bodyValidationResult {
 }
 
 func (validator *bodyValidator) validateAgainstJsonSchema(payload []byte) bodyValidationResult {
-	jsonSchema := jsonschema.Reflect(validator.config.requestValidationConfig.payloadValue)
+	reflector := &jsonschema.Reflector{
+		AllowAdditionalProperties: validator.config.requestValidationConfig.additionalProperties,
+	}
+	jsonSchema := reflector.Reflect(validator.config.requestValidationConfig.payloadValue)
 	schemaLoader := gojsonschema.NewGoLoader(jsonSchema)
 	dataLoader := gojsonschema.NewStringLoader((string(payload)))
 	schemaValidationResult, err := gojsonschema.Validate(schemaLoader, dataLoader)
