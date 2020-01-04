@@ -29,11 +29,14 @@ func TestMain(m *testing.M) {
 		validation.RequestValidation(validation.Payload(&E2eTestPayload{})),
 	)
 	server := startServer(wrapper(http.HandlerFunc(handler)))
+
 	exitCode := m.Run()
+
 	err := server.Shutdown(context.Background())
 	if err != nil {
 		log.Printf("Shutting down the server failed: %v", err)
 	}
+
 	os.Exit(exitCode)
 }
 func TestValidation_Ok(t *testing.T) {

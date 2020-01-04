@@ -2,7 +2,7 @@ package validation_test
 
 import (
 	validation "http-interaction-validation"
-	"http-interaction-validation/test_support/builders"
+	"http-interaction-validation/test/support/builders"
 	"io"
 	"io/ioutil"
 	"strings"
@@ -164,7 +164,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 				response := responseRecorder.Result()
 				assert.Equal(t, testCase.expectedStatusCode, response.StatusCode)
 				bytes, _ := ioutil.ReadAll(response.Body)
-				assert.Equal(t, string(bytes), testCase.expectedResponse)
+				assert.Equal(t, testCase.expectedResponse, string(bytes))
 			})
 		}
 	})
