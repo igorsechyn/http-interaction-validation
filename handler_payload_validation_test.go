@@ -2,6 +2,7 @@ package validation_test
 
 import (
 	validation "http-interaction-validation"
+	"http-interaction-validation/test/support"
 	"http-interaction-validation/test/support/builders"
 	"io"
 	"io/ioutil"
@@ -24,7 +25,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 		request := requestBuilder.
 			WithBody(strings.NewReader(defaultPayload)).
 			Build()
-		_, wrappedHandlerRequest := whenWrappedHandlerIsCalled(
+		_, wrappedHandlerRequest := support.WhenWrappedHandlerIsCalled(
 			request,
 			validation.RequestValidation(validation.Payload(&TestPayload{})),
 		)
@@ -36,7 +37,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 
 	t.Run("it should add body payload into request context", func(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader(defaultPayload)).Build()
-		_, wrappedHandlerRequest := whenWrappedHandlerIsCalled(
+		_, wrappedHandlerRequest := support.WhenWrappedHandlerIsCalled(
 			request,
 			validation.RequestValidation(validation.Payload(&TestPayload{})),
 		)
@@ -48,7 +49,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 
 	t.Run("it should not keep body payload on request, when PreservePayload option is false", func(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader(defaultPayload)).Build()
-		_, wrappedHandlerRequest := whenWrappedHandlerIsCalled(
+		_, wrappedHandlerRequest := support.WhenWrappedHandlerIsCalled(
 			request,
 			validation.RequestValidation(validation.Payload(&TestPayload{})),
 			validation.PreservePayload(false),
@@ -61,7 +62,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 
 	t.Run("it should not read the body from request, if request payload validation is not configured", func(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader(defaultPayload)).Build()
-		_, wrappedHandlerRequest := whenWrappedHandlerIsCalled(
+		_, wrappedHandlerRequest := support.WhenWrappedHandlerIsCalled(
 			request,
 			validation.PreservePayload(false),
 		)
@@ -156,7 +157,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 		for _, testCase := range testCases {
 			t.Run(testCase.description, func(t *testing.T) {
 				request := requestBuilder.WithBody(testCase.payload).Build()
-				responseRecorder, _ := whenWrappedHandlerIsCalled(
+				responseRecorder, _ := support.WhenWrappedHandlerIsCalled(
 					request,
 					testCase.options...,
 				)

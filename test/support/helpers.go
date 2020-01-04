@@ -1,4 +1,4 @@
-package validation_test
+package support
 
 import (
 	validation "http-interaction-validation"
@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 )
 
-func whenWrappedHandlerIsCalled(request *http.Request, options ...validation.Option) (*httptest.ResponseRecorder, *http.Request) {
+func WhenWrappedHandlerIsCalled(request *http.Request, options ...validation.Option) (*httptest.ResponseRecorder, *http.Request) {
 	var wrappedHandlerRequest *http.Request
 	responseRecorder := httptest.NewRecorder()
 	validationWrapper := validation.NewWrapper(options...)

@@ -1,6 +1,8 @@
 package validation
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/alecthomas/jsonschema"
@@ -64,6 +66,8 @@ func (validator *bodyValidator) validateAgainstJsonSchema(payload []byte) bodyVa
 		AllowAdditionalProperties: validator.config.requestValidationConfig.additionalProperties,
 	}
 	jsonSchema := reflector.Reflect(validator.config.requestValidationConfig.payloadValue)
+	bytes, _ := json.MarshalIndent(jsonSchema, "", "  ")
+	fmt.Println(string(bytes))
 	schemaLoader := gojsonschema.NewGoLoader(jsonSchema)
 	dataLoader := gojsonschema.NewStringLoader((string(payload)))
 	schemaValidationResult, err := gojsonschema.Validate(schemaLoader, dataLoader)
