@@ -6,12 +6,12 @@ all: install verify
 
 install:
 	mkdir -p bin
-	GO111MODULE=on GOBIN=$(BIN) go get github.com/githubnemo/CompileDaemon@v.1.1.0
-	GO111MODULE=on GOBIN=$(BIN) go get github.com/giantswarm/semver-bump
+	GOBIN=$(BIN) go get github.com/githubnemo/CompileDaemon@v.1.1.0
+	GOBIN=$(BIN) go get github.com/giantswarm/semver-bump
 	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s v1.21.0
-	GO111MODULE=on go mod download
-	GO111MODULE=on go mod vendor
-	GO111MODULE=on go mod tidy
+	go mod download
+	go mod vendor
+	go mod tidy
 
 test:
 	go test ./... -timeout 120s -count 1

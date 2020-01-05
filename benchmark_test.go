@@ -8,8 +8,6 @@ import (
 	"testing"
 )
 
-var response *httptest.ResponseRecorder
-
 func BenchmarkWithoutValidation(b *testing.B) {
 	b.ReportAllocs()
 	request := requestBuilder.
