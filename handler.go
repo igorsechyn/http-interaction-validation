@@ -40,13 +40,6 @@ func (handler *ValidationHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 }
 
 func (handler *ValidationHandler) validateRequest(r *http.Request) bodyValidationResult {
-	if !handler.config.requestValidationConfig.enabled {
-		return bodyValidationResult{
-			validatedValue: nil,
-			isValid:        true,
-			outcome:        outcome{},
-		}
-	}
 	return handler.bodyValidator.validate(r)
 }
 
@@ -66,10 +59,8 @@ func writeErrorResponse(w http.ResponseWriter, validationResult bodyValidationRe
 func NewWrapper(options ...Option) func(handler http.Handler) http.Handler {
 	config := getConfig(options...)
 	validationHandler := &ValidationHandler{
-		config: config,
-		bodyValidator: &bodyValidator{
-			config: config,
-		},
+		config:        config,
+		bodyValidator: newBodyValidator(config),
 	}
 	return func(handler http.Handler) http.Handler {
 		validationHandler.next = handler

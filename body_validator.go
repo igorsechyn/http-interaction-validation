@@ -1,8 +1,6 @@
 package validation
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/alecthomas/jsonschema"
@@ -10,7 +8,8 @@ import (
 )
 
 type bodyValidator struct {
-	config *config
+	config                  *config
+	bodyPayloadSchemaLoader gojsonschema.JSONLoader
 }
 
 type outcome struct {
@@ -21,6 +20,26 @@ type bodyValidationResult struct {
 	validatedValue []byte
 	isValid        bool
 	outcome        outcome
+}
+
+func initBodyPayloadSchemaLoader(config *config) gojsonschema.JSONLoader {
+	var schemaLoader gojsonschema.JSONLoader
+	if config.requestValidationConfig.payloadValue != nil {
+		reflector := &jsonschema.Reflector{
+			AllowAdditionalProperties: config.requestValidationConfig.additionalProperties,
+		}
+		jsonSchema := reflector.Reflect(config.requestValidationConfig.payloadValue)
+		schemaLoader = gojsonschema.NewGoLoader(jsonSchema)
+	}
+
+	return schemaLoader
+}
+
+func newBodyValidator(config *config) *bodyValidator {
+	return &bodyValidator{
+		config:                  config,
+		bodyPayloadSchemaLoader: initBodyPayloadSchemaLoader(config),
+	}
 }
 
 func (validator *bodyValidator) validate(r *http.Request) bodyValidationResult {
@@ -62,15 +81,8 @@ func (validator *bodyValidator) validateNilBody() bodyValidationResult {
 }
 
 func (validator *bodyValidator) validateAgainstJsonSchema(payload []byte) bodyValidationResult {
-	reflector := &jsonschema.Reflector{
-		AllowAdditionalProperties: validator.config.requestValidationConfig.additionalProperties,
-	}
-	jsonSchema := reflector.Reflect(validator.config.requestValidationConfig.payloadValue)
-	bytes, _ := json.MarshalIndent(jsonSchema, "", "  ")
-	fmt.Println(string(bytes))
-	schemaLoader := gojsonschema.NewGoLoader(jsonSchema)
 	dataLoader := gojsonschema.NewStringLoader((string(payload)))
-	schemaValidationResult, err := gojsonschema.Validate(schemaLoader, dataLoader)
+	schemaValidationResult, err := gojsonschema.Validate(validator.bodyPayloadSchemaLoader, dataLoader)
 
 	if err != nil {
 		return bodyValidationResult{
@@ -90,7 +102,8 @@ func (validator *bodyValidator) validateAgainstJsonSchema(payload []byte) bodyVa
 }
 
 func (validator *bodyValidator) shouldValidateBody() bool {
-	return validator.config.requestValidationConfig.payloadValue != nil
+	return (validator.config.requestValidationConfig.payloadValue != nil &&
+		validator.config.requestValidationConfig.enabled)
 }
 
 func toOutcome(result *gojsonschema.Result) outcome {

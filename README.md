@@ -79,5 +79,20 @@ type ValidationResponse struct {
 
 see `test/e2e/e2e_test.go` for an example
 
+## Performance
+
+### Benchmark results
+
+Baseline is a simple handler writing a 200 response without reading the body. It is compared to a wrapped handler which performs a body payload validation
+
+```
+go test -run=XXX -bench=.
+goos: darwin
+goarch: amd64
+pkg: http-interaction-validation
+BenchmarkWithoutValidation-4    326973954                3.69 ns/op            0 B/op          0 allocs/op
+BenchmarkWithValidation-4          55587             20786 ns/op           11171 B/op        142 allocs/op
+```
+
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)

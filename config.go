@@ -65,18 +65,9 @@ func Enabled(value bool) RequestValidationConfigOption {
 }
 
 func RequestValidation(options ...RequestValidationConfigOption) Option {
-	requestValidationConfig := &requestValidationConfig{
-		payloadValue:         nil,
-		bodyRequired:         true,
-		enabled:              true,
-		additionalProperties: true,
-	}
-
-	for _, option := range options {
-		option(requestValidationConfig)
-	}
-
 	return func(config *config) {
-		config.requestValidationConfig = requestValidationConfig
+		for _, option := range options {
+			option(config.requestValidationConfig)
+		}
 	}
 }

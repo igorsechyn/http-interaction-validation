@@ -16,6 +16,9 @@ install:
 test:
 	go test ./... -timeout 120s -count 1
 
+bench:
+	go test -run=XXX -bench=.
+
 fmt:
 	gofmt -w=true -s $$(find . -type f -name '*.go' -not -path "./vendor/*")
 	goimports -w=true -d $$(find . -type f -name '*.go' -not -path "./vendor/*")
