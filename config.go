@@ -1,11 +1,11 @@
 package validation
 
 type config struct {
-	preservePayload         bool
 	requestValidationConfig *requestValidationConfig
 }
 
 type requestValidationConfig struct {
+	preservePayload      bool
 	payloadValue         interface{}
 	bodyRequired         bool
 	enabled              bool
@@ -14,8 +14,8 @@ type requestValidationConfig struct {
 
 func getConfig(options ...Option) *config {
 	handlerConfig := &config{
-		preservePayload: true,
 		requestValidationConfig: &requestValidationConfig{
+			preservePayload:      true,
 			payloadValue:         nil,
 			bodyRequired:         true,
 			enabled:              true,
@@ -32,13 +32,13 @@ func getConfig(options ...Option) *config {
 
 type Option func(config *config)
 
-func PreservePayload(value bool) Option {
-	return func(config *config) {
+type RequestValidationConfigOption func(requestConfig *requestValidationConfig)
+
+func PreservePayload(value bool) RequestValidationConfigOption {
+	return func(config *requestValidationConfig) {
 		config.preservePayload = value
 	}
 }
-
-type RequestValidationConfigOption func(requestConfig *requestValidationConfig)
 
 func Payload(payloadValue interface{}) RequestValidationConfigOption {
 	return func(config *requestValidationConfig) {

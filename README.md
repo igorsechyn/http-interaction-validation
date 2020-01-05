@@ -42,13 +42,11 @@ wrappedHandler := withValidation(handler)
 
 ### Configuration options
 
-#### `validation.PreservePayload(value bool)`
-
-In order to validate request body, the payload has to be read from the request. This option can be used to control whether the `request.Body` should be copied for validation or not. Per default the body is copied and the wrapped handler can reread the payload. 
-
 #### `validation.RequestValidation(options ...validation.RequestValidationConfigOption)`
 
 Is used for setting up the request validation:
+
+* `validation.PreservePayload(value bool)`: In order to validate request body, the payload has to be read from the request. This option can be used to control whether the `request.Body` should be copied for validation or not. Per default the body is copied and the wrapped handler can reread the payload. 
 
 * `validation.Payload(payloadValue interface{})`: request payload validation is performed using json schema. In order to define a schema for handlers payload `jsonschema` field tags are used on the struct defining the payload. [github.com/alecthomas/jsonschema](https://github.com/alecthomas/jsonschema) package is used to create a valid json schema from the tags and `github.com/xeipuuv/gojsonschema` package to validate the payload against it.
 ```

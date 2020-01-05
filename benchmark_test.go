@@ -36,8 +36,8 @@ func BenchmarkWithValidation(b *testing.B) {
 		validation.RequestValidation(
 			validation.Payload(&TestPayload{}),
 			validation.Enabled(true),
-		),
-		validation.PreservePayload(false))
+			validation.PreservePayload(false),
+		))
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 	})

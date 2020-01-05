@@ -51,8 +51,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader(defaultPayload)).Build()
 		_, wrappedHandlerRequest := support.WhenWrappedHandlerIsCalled(
 			request,
-			validation.RequestValidation(validation.Payload(&TestPayload{})),
-			validation.PreservePayload(false),
+			validation.RequestValidation(validation.Payload(&TestPayload{}), validation.PreservePayload(false)),
 		)
 
 		body, err := ioutil.ReadAll(wrappedHandlerRequest.Body)
@@ -64,7 +63,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 		request := requestBuilder.WithBody(strings.NewReader(defaultPayload)).Build()
 		_, wrappedHandlerRequest := support.WhenWrappedHandlerIsCalled(
 			request,
-			validation.PreservePayload(false),
+			validation.RequestValidation(validation.PreservePayload(false)),
 		)
 
 		bytesFromContext, ok := validation.PayloadFromContext(wrappedHandlerRequest.Context())

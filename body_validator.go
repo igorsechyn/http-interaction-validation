@@ -44,7 +44,7 @@ func newBodyValidator(config *config) *bodyValidator {
 
 func (validator *bodyValidator) validate(r *http.Request) bodyValidationResult {
 	if validator.shouldValidateBody() {
-		bodyValue, _ := readPayload(r, validator.config.preservePayload)
+		bodyValue, _ := readPayload(r, validator.config.requestValidationConfig.preservePayload)
 		return validator.validatePayload(bodyValue)
 	}
 
