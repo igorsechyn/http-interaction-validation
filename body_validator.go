@@ -1,15 +1,17 @@
 package validation
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/alecthomas/jsonschema"
-	"github.com/xeipuuv/gojsonschema"
+	js "github.com/qri-io/jsonschema"
 )
 
 type bodyValidator struct {
-	config                  *config
-	bodyPayloadSchemaLoader gojsonschema.JSONLoader
+	config            *config
+	bodyPayloadSchema *js.RootSchema
 }
 
 type outcome struct {
@@ -22,23 +24,30 @@ type bodyValidationResult struct {
 	outcome        outcome
 }
 
-func initBodyPayloadSchemaLoader(config *config) gojsonschema.JSONLoader {
-	var schemaLoader gojsonschema.JSONLoader
+func initBodyPayloadSchema(config *config) *js.RootSchema {
+	schema := new(js.RootSchema)
 	if config.requestValidationConfig.payloadValue != nil {
 		reflector := &jsonschema.Reflector{
 			AllowAdditionalProperties: config.requestValidationConfig.additionalProperties,
 		}
 		jsonSchema := reflector.Reflect(config.requestValidationConfig.payloadValue)
-		schemaLoader = gojsonschema.NewGoLoader(jsonSchema)
+		jsonSchemaBytes, err := json.Marshal(jsonSchema)
+		if err != nil {
+			fmt.Printf("Could not marshall json schema %v. Err: %v", string(jsonSchemaBytes), err)
+		}
+		err = json.Unmarshal(jsonSchemaBytes, schema)
+		if err != nil {
+			fmt.Printf("Could not unmarshall json schema %v. Err: %v", string(jsonSchemaBytes), err)
+		}
 	}
 
-	return schemaLoader
+	return schema
 }
 
 func newBodyValidator(config *config) *bodyValidator {
 	return &bodyValidator{
-		config:                  config,
-		bodyPayloadSchemaLoader: initBodyPayloadSchemaLoader(config),
+		config:            config,
+		bodyPayloadSchema: initBodyPayloadSchema(config),
 	}
 }
 
@@ -81,9 +90,7 @@ func (validator *bodyValidator) validateNilBody() bodyValidationResult {
 }
 
 func (validator *bodyValidator) validateAgainstJsonSchema(payload []byte) bodyValidationResult {
-	dataLoader := gojsonschema.NewStringLoader((string(payload)))
-	schemaValidationResult, err := gojsonschema.Validate(validator.bodyPayloadSchemaLoader, dataLoader)
-
+	schemaValidationResult, err := validator.bodyPayloadSchema.ValidateBytes(payload)
 	if err != nil {
 		return bodyValidationResult{
 			validatedValue: payload,
@@ -96,7 +103,7 @@ func (validator *bodyValidator) validateAgainstJsonSchema(payload []byte) bodyVa
 
 	return bodyValidationResult{
 		validatedValue: payload,
-		isValid:        schemaValidationResult.Valid(),
+		isValid:        len(schemaValidationResult) == 0,
 		outcome:        toOutcome(schemaValidationResult),
 	}
 }
@@ -106,10 +113,10 @@ func (validator *bodyValidator) shouldValidateBody() bool {
 		validator.config.requestValidationConfig.enabled)
 }
 
-func toOutcome(result *gojsonschema.Result) outcome {
-	errors := make([]string, len(result.Errors()))
-	for index, error := range result.Errors() {
-		errors[index] = error.String()
+func toOutcome(validationErrors []js.ValError) outcome {
+	errors := make([]string, len(validationErrors))
+	for index, error := range validationErrors {
+		errors[index] = error.Error()
 	}
 	return outcome{
 		errors: errors,

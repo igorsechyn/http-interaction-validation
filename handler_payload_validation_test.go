@@ -87,7 +87,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 				options:            []validation.Option{validation.RequestValidation(validation.Payload(&TestPayload{}))},
 				payload:            strings.NewReader("{}"),
 				expectedStatusCode: 400,
-				expectedResponse:   `{"code":"body.validation.failure","errors":["(root): name is required"]}`,
+				expectedResponse:   `{"code":"body.validation.failure","errors":["/: {} \"name\" value is required"]}`,
 			},
 			{
 				description: "body has wrong format, and request validation is disabled",
@@ -103,7 +103,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 				options:            []validation.Option{validation.RequestValidation(validation.Payload(&TestPayload{}))},
 				payload:            strings.NewReader("{not json"),
 				expectedStatusCode: 400,
-				expectedResponse:   `{"code":"body.validation.failure","errors":["invalid character 'n' looking for beginning of object key string"]}`,
+				expectedResponse:   `{"code":"body.validation.failure","errors":["error parsing JSON bytes: invalid character 'n' looking for beginning of object key string"]}`,
 			},
 			{
 				description: "body is missing, but is required",
@@ -149,7 +149,7 @@ func TestHandler_PayloadValidation(t *testing.T) {
 				)},
 				payload:            strings.NewReader(`{"name":"value","additional":"property"}`),
 				expectedStatusCode: 400,
-				expectedResponse:   `{"code":"body.validation.failure","errors":["(root): Additional property additional is not allowed"]}`,
+				expectedResponse:   `{"code":"body.validation.failure","errors":["/additional: \"property\" cannot match schema"]}`,
 			},
 		}
 

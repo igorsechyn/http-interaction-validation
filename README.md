@@ -48,7 +48,7 @@ Is used for setting up the request validation:
 
 * `validation.PreservePayload(value bool)`: In order to validate request body, the payload has to be read from the request. This option can be used to control whether the `request.Body` should be copied for validation or not. Per default the body is copied and the wrapped handler can reread the payload. 
 
-* `validation.Payload(payloadValue interface{})`: request payload validation is performed using json schema. In order to define a schema for handlers payload `jsonschema` field tags are used on the struct defining the payload. [github.com/alecthomas/jsonschema](https://github.com/alecthomas/jsonschema) package is used to create a valid json schema from the tags and `github.com/xeipuuv/gojsonschema` package to validate the payload against it.
+* `validation.Payload(payloadValue interface{})`: request payload validation is performed using json schema. In order to define a schema for handlers payload `jsonschema` field tags are used on the struct defining the payload. [github.com/alecthomas/jsonschema](https://github.com/alecthomas/jsonschema) package is used to create a valid json schema from the tags and `github.com/qri-io/jsonschema` package to validate the payload against it.
 ```
 type Payload struct {
     Name    string `json:"name" jsonschema:"required,minLength=1,maxLength=20,description=this is a property,title=the name"`
@@ -88,8 +88,8 @@ go test -run=XXX -bench=.
 goos: darwin
 goarch: amd64
 pkg: http-interaction-validation
-BenchmarkWithoutValidation-4    326973954                3.69 ns/op            0 B/op          0 allocs/op
-BenchmarkWithValidation-4          55587             20786 ns/op           11171 B/op        142 allocs/op
+BenchmarkWithoutValidation-4    335459334                3.54 ns/op            0 B/op          0 allocs/op
+BenchmarkWithValidation-4        1031901              1129 ns/op            1247 B/op         11 allocs/op
 ```
 
 ## Contributing

@@ -54,5 +54,5 @@ func TestValidation_NotOk(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 400, response.StatusCode)
 	responseBody, _ := ioutil.ReadAll(response.Body)
-	assert.Equal(t, `{"code":"body.validation.failure","errors":["name: Invalid type. Expected: string, given: integer"]}`, string(responseBody))
+	assert.Equal(t, `{"code":"body.validation.failure","errors":["/name: 2 type should be string"]}`, string(responseBody))
 }
