@@ -4,7 +4,6 @@ type config struct {
 	requestValidationConfig *requestValidationConfig
 }
 
-// dummy commit another
 type requestValidationConfig struct {
 	preservePayload      bool
 	payloadValue         interface{}
